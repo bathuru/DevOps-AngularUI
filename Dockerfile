@@ -1,24 +1,27 @@
-# pull official base image
-FROM node:13.12.0-alpine
+# base image
+FROM node:latest as build
 
 # set working directory
 WORKDIR /app
 
-# add `/app/node_modules/.bin` to $PATH
-ENV PATH /app/node_modules/.bin:$PATH
-
-# Copies package.json and package-lock.json to Docker environment
-COPY package.json ./
-COPY package-lock.json ./
-
-# Installs all node packages
-RUN npm install --silent
+# install and cache app dependencies
+COPY package.json /app/package.json
+RUN npm install
 
 # add app
-COPY . ./
+COPY . /app
 
-# Uses port which is used by the actual application
-EXPOSE 4200
+# generate build
+RUN ng build --output-path=dist
 
-# start app
-CMD ["npm", "start"]
+# base image
+FROM nginx:alpine
+
+# copy artifact build from the 'build environment'
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# expose port 80
+EXPOSE 80
+
+# run nginx
+CMD ["nginx", "-g", "daemon off;"]
