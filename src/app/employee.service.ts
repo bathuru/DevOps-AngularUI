@@ -7,27 +7,27 @@ import { Observable } from 'rxjs';
 })
 export class EmployeeService {
 
-  private baseUrl = 'http://bathuru.xyz/api/v1/employees';
+  private baseUrl = 'http://bathuru.xyz/api/v1';
 
   constructor(private http: HttpClient) { }
 
+  getEmployeesList(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/employeeList`);
+  }
+
   getEmployee(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${id}`);
+    return this.http.get(`${this.baseUrl}/employeeList/${id}`);
   }
 
   createEmployee(employee: Object): Observable<Object> {
-    return this.http.post(`${this.baseUrl}`, employee);
+    return this.http.post(`${this.baseUrl}/saveEmployee`, employee);
   }
 
   updateEmployee(id: number, value: any): Observable<Object> {
-    return this.http.put(`${this.baseUrl}/${id}`, value);
+    return this.http.put(`${this.baseUrl}/updateEmployee/${id}`, value);
   }
 
   deleteEmployee(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${id}`, { responseType: 'text' });
-  }
-
-  getEmployeesList(): Observable<any> {
-    return this.http.get(`${this.baseUrl}`);
+    return this.http.delete(`${this.baseUrl}/deleteEmployee/${id}`, { responseType: 'text' });
   }
 }
